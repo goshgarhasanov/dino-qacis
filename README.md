@@ -8,6 +8,7 @@
 [![Lisenziya](https://img.shields.io/badge/Lisenziya-MIT-a78bfa?style=for-the-badge&labelColor=0b0f17)](#lisenziya)
 [![Vanilla](https://img.shields.io/badge/Vanilla-JS-ff7a90?style=for-the-badge&labelColor=0b0f17)](#)
 [![Mobil](https://img.shields.io/badge/Mobil-Responsiv-3aa15a?style=for-the-badge&labelColor=0b0f17)](#)
+[![Bir qəhvə al](https://img.shields.io/badge/%E2%98%95-Bir%20q%C9%99hv%C9%99%20al-ff7d5a?style=for-the-badge&labelColor=0b0f17)](https://kofe.al/@goshgarhasanov)
 [![Pages](https://img.shields.io/badge/GitHub%20Pages-Aktiv-7c8cff?style=for-the-badge&labelColor=0b0f17)](https://goshgarhasanov.github.io/dino-qacis/)
 
 </div>
