@@ -5,6 +5,30 @@
   const H = 240;
   const GROUND_Y = 198;
 
+  const DINO_C = {
+    body:   "#4ecf7a",
+    bodyDk: "#3aa05f",
+    belly:  "#bdebc3",
+    spike:  "#2c8a52",
+    eye:    "#ffffff",
+    pupil:  "#0e1219",
+    mouth:  "#0e1219",
+    tongue: "#ff5e7a",
+    claws:  "#ffd24d",
+  };
+  const BIRD_C = {
+    body:   "#7c8cff",
+    wing:   "#5867d6",
+    wingHi: "#a4afff",
+    beak:   "#ffb84d",
+    eye:    "#0e1219",
+  };
+  const CACTUS_C = {
+    main:   "#3aa15a",
+    shade:  "#1f6e3a",
+    spine:  "#7fd193",
+  };
+
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d", { alpha: false });
   const overlay = document.getElementById("overlay");
@@ -61,27 +85,25 @@
     const dark = prefersDark.matches;
     if (game && game.night) {
       return {
-        sky: dark ? "#05070d" : "#0d1320",
-        ground: dark ? "#cdd2db" : "#dfe3ec",
-        groundDot: dark ? "#5b6478" : "#8b94a6",
-        fg: dark ? "#f1f3f7" : "#f1f3f7",
-        bird: dark ? "#f1f3f7" : "#f1f3f7",
-        cactus: dark ? "#9bd28e" : "#9bd28e",
-        cloud: dark ? "#1c2230" : "#1c2230",
-        star: dark ? "#fff8b0" : "#fff8b0",
-        moon: dark ? "#fff2c0" : "#fff2c0",
+        sky:       dark ? "#05080f" : "#0d1320",
+        skyTop:    dark ? "#0a1226" : "#0e1830",
+        ground:    "#cdd2db",
+        groundDot: "#5b6478",
+        fg:        "#f1f3f7",
+        cloud:     "#1c2230",
+        star:      "#fff8b0",
+        moon:      "#fff2c0",
       };
     }
     return {
-      sky: dark ? "#0f1115" : "#f7f7f7",
-      ground: dark ? "#1f2330" : "#3a3f4b",
+      sky:       dark ? "#0f1320" : "#eaf3ff",
+      skyTop:    dark ? "#1a2240" : "#cfe5ff",
+      ground:    dark ? "#1f2330" : "#3a3f4b",
       groundDot: dark ? "#3a4055" : "#9aa3b2",
-      fg: dark ? "#e9ecf1" : "#2b2b2b",
-      bird: dark ? "#e9ecf1" : "#2b2b2b",
-      cactus: dark ? "#7bbf6e" : "#3f7a35",
-      cloud: dark ? "#3a4055" : "#cfd5e0",
-      star: "#fff8b0",
-      moon: "#fff2c0",
+      fg:        dark ? "#e9ecf1" : "#2b2b2b",
+      cloud:     dark ? "#3a4055" : "#dde6f4",
+      star:      "#fff8b0",
+      moon:      "#fff2c0",
     };
   }
 
@@ -123,100 +145,127 @@
     ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
   }
 
-  function drawDino(d, p) {
+  function drawDino(d) {
     const x = d.x, y = d.y;
-    const c = p.fg;
-    const eyeOn = c, eyeBg = p.sky;
-
-    if (d.dead) {
-      drawDinoBody(x, y, c, "stand");
-      rect(x + 33, y + 9, 5, 1, eyeBg);
-      rect(x + 33, y + 11, 5, 1, eyeBg);
-      rect(x + 34, y + 10, 1, 1, eyeBg);
-      rect(x + 36, y + 10, 1, 1, eyeBg);
-      return;
-    }
-
-    if (d.ducking && !d.jumping) {
-      drawDinoDuck(x, y, c, eyeBg, d.frame);
-      return;
-    }
-
-    const pose = d.jumping ? "jump" : (d.frame === 0 ? "run1" : "run2");
-    drawDinoBody(x, y, c, pose);
-    rect(x + 33, y + 9, 4, 4, eyeBg);
-    rect(x + 34, y + 10, 2, 2, c);
+    if (d.dead) { drawDinoStanding(x, y, 0); drawDinoDeadEye(x, y); return; }
+    if (d.ducking && !d.jumping) { drawDinoDucking(x, y, d.frame); return; }
+    if (d.jumping) { drawDinoStanding(x, y, "jump"); return; }
+    drawDinoStanding(x, y, d.frame === 0 ? "run1" : "run2");
   }
 
-  function drawDinoBody(x, y, c, pose) {
-    rect(x + 22, y + 2,  18, 18, c);
-    rect(x + 38, y + 6,  3,  2,  c);
-    rect(x + 30, y + 16, 6,  3,  c);
-    rect(x + 32, y + 18, 3,  2,  "#0000");
-    rect(x + 12, y + 20, 28, 14, c);
-    rect(x + 4,  y + 22, 10, 10, c);
-    rect(x + 0,  y + 18, 6,  4,  c);
-    rect(x + 40, y + 18, 4,  6,  c);
-    rect(x + 16, y + 34, 6,  10, c);
-    rect(x + 26, y + 34, 6,  10, c);
+  function drawDinoStanding(x, y, pose) {
+    const C = DINO_C;
+    rect(x + 0,  y + 18, 6,  6,  C.body);
+    rect(x + 4,  y + 22, 10, 10, C.body);
+    rect(x + 6,  y + 16, 4,  4,  C.bodyDk);
+    rect(x + 24, y + 0,  3,  2,  C.spike);
+    rect(x + 30, y + 0,  3,  2,  C.spike);
+    rect(x + 36, y + 0,  3,  2,  C.spike);
+    rect(x + 22, y + 2,  18, 16, C.body);
+    rect(x + 40, y + 6,  3,  3,  C.body);
+    rect(x + 33, y + 8,  4,  4,  C.eye);
+    rect(x + 34, y + 9,  2,  2,  C.pupil);
+    rect(x + 30, y + 14, 8,  3,  C.mouth);
+    if (pose === "run1") rect(x + 35, y + 15, 2, 1, C.tongue);
+    rect(x + 12, y + 18, 28, 14, C.body);
+    rect(x + 14, y + 16, 10, 4,  C.bodyDk);
+    rect(x + 40, y + 16, 4,  6,  C.body);
+    rect(x + 26, y + 22, 4,  6,  C.body);
+    rect(x + 28, y + 26, 3,  2,  C.claws);
+    rect(x + 12, y + 28, 26, 5,  C.belly);
+    rect(x + 8,  y + 26, 6,  6,  C.belly);
+    rect(x + 16, y + 32, 6,  12, C.body);
+    rect(x + 26, y + 32, 6,  12, C.body);
+    rect(x + 16, y + 36, 1,  6,  C.bodyDk);
+    rect(x + 26, y + 36, 1,  6,  C.bodyDk);
+
     if (pose === "run1") {
-      rect(x + 16, y + 44, 8, 3, c);
-      rect(x + 28, y + 42, 4, 2, c);
+      rect(x + 14, y + 44, 9, 3, C.claws);
+      rect(x + 28, y + 42, 5, 2, C.bodyDk);
     } else if (pose === "run2") {
-      rect(x + 14, y + 42, 4, 2, c);
-      rect(x + 26, y + 44, 8, 3, c);
+      rect(x + 14, y + 42, 5, 2, C.bodyDk);
+      rect(x + 25, y + 44, 9, 3, C.claws);
     } else if (pose === "jump") {
-      rect(x + 16, y + 44, 6, 3, c);
-      rect(x + 27, y + 44, 6, 3, c);
+      rect(x + 14, y + 44, 8, 3, C.claws);
+      rect(x + 26, y + 44, 8, 3, C.claws);
     } else {
-      rect(x + 16, y + 44, 6, 3, c);
-      rect(x + 26, y + 44, 6, 3, c);
+      rect(x + 14, y + 44, 8, 3, C.claws);
+      rect(x + 26, y + 44, 8, 3, C.claws);
     }
   }
 
-  function drawDinoDuck(x, y, c, eyeBg, frame) {
-    rect(x + 0,  y + 22, 8,  10, c);
-    rect(x + 6,  y + 20, 30, 14, c);
-    rect(x + 30, y + 16, 22, 14, c);
-    rect(x + 50, y + 18, 4,  10, c);
-    rect(x + 46, y + 22, 6,  3,  c);
-    rect(x + 42, y + 20, 6,  2,  "#0000");
-    rect(x + 44, y + 22, 4,  2,  eyeBg);
-    rect(x + 45, y + 22, 2,  2,  c);
+  function drawDinoDeadEye(x, y) {
+    const C = DINO_C;
+    rect(x + 33, y + 8, 4, 4, C.eye);
+    rect(x + 33, y + 8, 1, 1, C.pupil);
+    rect(x + 36, y + 8, 1, 1, C.pupil);
+    rect(x + 34, y + 9, 2, 2, C.pupil);
+    rect(x + 33, y + 11, 1, 1, C.pupil);
+    rect(x + 36, y + 11, 1, 1, C.pupil);
+  }
+
+  function drawDinoDucking(x, y, frame) {
+    const C = DINO_C;
+    rect(x + 0,  y + 22, 8,  10, C.body);
+    rect(x + 6,  y + 20, 30, 14, C.body);
+    rect(x + 12, y + 18, 4,  2,  C.spike);
+    rect(x + 18, y + 18, 4,  2,  C.spike);
+    rect(x + 24, y + 18, 4,  2,  C.spike);
+    rect(x + 30, y + 16, 22, 14, C.body);
+    rect(x + 50, y + 18, 4,  10, C.body);
+    rect(x + 32, y + 14, 2,  2,  C.spike);
+    rect(x + 38, y + 14, 2,  2,  C.spike);
+    rect(x + 44, y + 14, 2,  2,  C.spike);
+    rect(x + 8,  y + 28, 26, 4,  C.belly);
+    rect(x + 44, y + 22, 4,  3,  C.eye);
+    rect(x + 45, y + 22, 2,  2,  C.pupil);
+    rect(x + 46, y + 26, 6,  2,  C.mouth);
     if (frame === 0) {
-      rect(x + 18, y + 34, 5, 8, c);
-      rect(x + 30, y + 34, 5, 6, c);
+      rect(x + 18, y + 34, 5, 8, C.body);
+      rect(x + 18, y + 41, 6, 2, C.claws);
+      rect(x + 30, y + 34, 5, 6, C.body);
+      rect(x + 30, y + 39, 6, 2, C.claws);
     } else {
-      rect(x + 18, y + 34, 5, 6, c);
-      rect(x + 30, y + 34, 5, 8, c);
+      rect(x + 18, y + 34, 5, 6, C.body);
+      rect(x + 18, y + 39, 6, 2, C.claws);
+      rect(x + 30, y + 34, 5, 8, C.body);
+      rect(x + 30, y + 41, 6, 2, C.claws);
     }
   }
 
-  function drawCactus(o, p) {
-    const c = p.cactus;
+  function drawCactus(o) {
+    const C = CACTUS_C;
     for (const part of o.parts) {
       const px = o.x + part.dx;
       const py = GROUND_Y - part.h - part.dy;
-      rect(px, py, part.w, part.h, c);
-      rect(px - 3, py + part.h * 0.25, 3, part.h * 0.4, c);
-      rect(px + part.w, py + part.h * 0.45, 3, part.h * 0.4, c);
-      rect(px + 1, py + 2, 2, 2, "rgba(0,0,0,0.18)");
+      rect(px, py, part.w, part.h, C.main);
+      rect(px + part.w - 2, py + 2, 2, part.h - 2, C.shade);
+      rect(px - 3, py + part.h * 0.25, 3, part.h * 0.4, C.main);
+      rect(px - 3 + 1, py + part.h * 0.25 + 2, 2, part.h * 0.35, C.shade);
+      rect(px + part.w, py + part.h * 0.45, 3, part.h * 0.4, C.main);
+      rect(px + part.w + 1, py + part.h * 0.45 + 2, 2, part.h * 0.32, C.shade);
+      rect(px + 1, py + 2, 1, 2, C.spine);
+      rect(px + 1, py + Math.floor(part.h * 0.4), 1, 2, C.spine);
+      rect(px + part.w - 1, py + Math.floor(part.h * 0.6), 1, 2, C.spine);
     }
   }
 
-  function drawBird(o, p) {
-    const c = p.bird;
+  function drawBird(o) {
+    const C = BIRD_C;
     const x = o.x, y = o.y;
-    rect(x + 18, y + 6, 16, 8, c);
-    rect(x + 30, y + 4, 8, 4, c);
-    rect(x + 36, y + 6, 4, 2, c);
-    rect(x + 22, y + 12, 4, 2, c);
+    rect(x + 18, y + 6, 16, 8, C.body);
+    rect(x + 30, y + 4, 8,  4, C.body);
+    rect(x + 36, y + 6, 4,  2, C.beak);
+    rect(x + 33, y + 5, 1,  1, C.eye);
+    rect(x + 22, y + 12, 4, 2, C.body);
     if (o.frame === 0) {
-      rect(x + 6,  y - 4, 18, 4, c);
-      rect(x + 0,  y - 6, 10, 4, c);
+      rect(x + 6,  y - 4, 18, 4, C.wing);
+      rect(x + 0,  y - 6, 10, 4, C.wing);
+      rect(x + 8,  y - 3, 14, 1, C.wingHi);
     } else {
-      rect(x + 6,  y + 14, 18, 4, c);
-      rect(x + 0,  y + 16, 10, 4, c);
+      rect(x + 6,  y + 14, 18, 4, C.wing);
+      rect(x + 0,  y + 16, 10, 4, C.wing);
+      rect(x + 8,  y + 15, 14, 1, C.wingHi);
     }
   }
 
@@ -285,7 +334,33 @@
     paused: false,
     swipeStartY: 0,
     flashAlpha: 0,
+    particles: [],
+    dustTimer: 0,
+    shake: 0,
   };
+
+  function spawnDust(x, y) {
+    if (game.particles.length > 60) return;
+    game.particles.push({
+      type: "dust",
+      x, y,
+      vx: -1.4 - Math.random() * 0.6,
+      vy: -0.3 - Math.random() * 0.4,
+      life: 0,
+      maxLife: 420 + Math.random() * 120,
+      size: 2 + (Math.random() < 0.4 ? 1 : 0),
+    });
+  }
+  function spawnPopup(x, y, text) {
+    game.particles.push({
+      type: "popup",
+      x, y,
+      vy: -0.55,
+      life: 0,
+      maxLife: 900,
+      text,
+    });
+  }
 
   function makeDino() {
     return {
@@ -319,6 +394,9 @@
     game.spawnTimer = 0;
     game.nextSpawnIn = 1400;
     game.flashAlpha = 0;
+    game.particles = [];
+    game.dustTimer = 0;
+    game.shake = 0;
     bestEl.textContent = pad(game.best);
     scoreEl.textContent = pad(0);
   }
@@ -450,6 +528,7 @@
     subtitle.textContent = `Oyun bitdi — topladığınız xal: ${pad(game.score)}`;
     primaryBtn.textContent = "Yenidən başla";
     game.flashAlpha = 0.35;
+    game.shake = 8;
   }
   function restart() {
     reset();
@@ -470,6 +549,7 @@
         game.lastMilestone = game.score;
         sfx.point();
         game.flashAlpha = 0.18;
+        spawnPopup(d.x + 50, d.y - 6, "+100");
         if (game.score % 300 === 0) game.night = !game.night;
       }
     }
@@ -490,6 +570,28 @@
       d.y = GROUND_Y - 30;
     } else {
       d.y = GROUND_Y - 47;
+    }
+
+    if (!d.jumping && !d.dead) {
+      game.dustTimer += dt;
+      const interval = Math.max(70, 220 - game.speed * 12);
+      if (game.dustTimer > interval) {
+        game.dustTimer = 0;
+        spawnDust(d.x + (d.ducking ? 18 : 14), GROUND_Y - 1);
+      }
+    }
+
+    for (let i = game.particles.length - 1; i >= 0; i--) {
+      const part = game.particles[i];
+      part.life += dt;
+      if (part.type === "dust") {
+        part.x += (part.vx * (dt / 16.6667)) - advance * 0.15;
+        part.y += part.vy * (dt / 16.6667);
+        part.vy += 0.02 * (dt / 16.6667);
+      } else if (part.type === "popup") {
+        part.y += part.vy * (dt / 16.6667);
+      }
+      if (part.life >= part.maxLife) game.particles.splice(i, 1);
     }
 
     for (const c of game.clouds) c.x -= c.speed * (dt / 16.6667) * (game.speed * 0.18);
@@ -563,10 +665,17 @@
     const ox = (cw - W * scale) / 2;
     const oy = (ch - H * scale) / 2;
 
+    const shx = game.shake > 0 ? (Math.random() - 0.5) * game.shake * scale : 0;
+    const shy = game.shake > 0 ? (Math.random() - 0.5) * game.shake * scale : 0;
+    if (game.shake > 0) game.shake = Math.max(0, game.shake - 0.45);
+
     ctx.save();
-    ctx.fillStyle = p.sky;
+    const grad = ctx.createLinearGradient(0, 0, 0, ch);
+    grad.addColorStop(0, p.skyTop);
+    grad.addColorStop(1, p.sky);
+    ctx.fillStyle = grad;
     ctx.fillRect(0, 0, cw, ch);
-    ctx.translate(ox, oy);
+    ctx.translate(ox + shx, oy + shy);
     ctx.scale(scale, scale);
 
     drawStars(game.stars, p);
@@ -575,10 +684,11 @@
     drawGround(game.ground, p);
 
     for (const o of game.obstacles) {
-      if (o.type === "bird") drawBird(o, p);
-      else drawCactus(o, p);
+      if (o.type === "bird") drawBird(o);
+      else drawCactus(o);
     }
-    drawDino(game.dino, p);
+    drawDino(game.dino);
+    drawParticles(p);
 
     if (game.flashAlpha > 0) {
       ctx.fillStyle = `rgba(255,255,255,${game.flashAlpha})`;
@@ -586,6 +696,20 @@
     }
 
     ctx.restore();
+  }
+
+  function drawParticles(p) {
+    for (const part of game.particles) {
+      const a = Math.max(0, 1 - part.life / part.maxLife);
+      if (part.type === "dust") {
+        ctx.fillStyle = `rgba(180,190,205,${0.55 * a})`;
+        ctx.fillRect(Math.round(part.x), Math.round(part.y), part.size, part.size);
+      } else if (part.type === "popup") {
+        ctx.fillStyle = `rgba(94,234,212,${a})`;
+        ctx.font = "bold 14px ui-monospace, SFMono-Regular, Menlo, monospace";
+        ctx.fillText(part.text, part.x, part.y);
+      }
+    }
   }
 
   function loop(t) {
