@@ -48,7 +48,6 @@
   };
 
   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)");
 
   function readBest() {
     const v = parseInt(localStorage.getItem(STORE.best) || "0", 10);
@@ -332,7 +331,6 @@
     duckHeld: false,
     jumpQueued: false,
     paused: false,
-    swipeStartY: 0,
     flashAlpha: 0,
     particles: [],
     dustTimer: 0,
@@ -397,6 +395,8 @@
     game.particles = [];
     game.dustTimer = 0;
     game.shake = 0;
+    game.duckHeld = false;
+    game.jumpQueued = false;
     bestEl.textContent = pad(game.best);
     scoreEl.textContent = pad(0);
   }
@@ -508,12 +508,21 @@
     overlay.dataset.state = "paused";
     subtitle.textContent = "Fasilə verildi — davam etmək üçün P düyməsini bas və ya ekrana toxun";
     primaryBtn.textContent = "Davam et";
+    setPauseUI(true);
   }
   function resume() {
     if (game.state !== "paused") return;
     game.state = "playing";
     overlay.dataset.state = "playing";
     game.last = performance.now();
+    setPauseUI(false);
+  }
+  function setPauseUI(paused) {
+    const ic = btnPause.querySelector(".ic");
+    const lb = btnPause.querySelector(".lb");
+    if (!ic || !lb) return;
+    if (paused) { ic.textContent = "▶"; lb.textContent = "Davam et"; }
+    else { ic.textContent = "❚❚"; lb.textContent = "Fasilə"; }
   }
   function gameover() {
     game.state = "gameover";
@@ -771,24 +780,15 @@
   pressOn(btnJump, () => jump(), null);
   pressOn(btnDuck, () => setDuck(true), () => setDuck(false));
 
-  let touchStart = null;
   canvas.addEventListener("pointerdown", (e) => {
     e.preventDefault();
-    touchStart = { x: e.clientX, y: e.clientY, t: performance.now() };
     if (game.state !== "playing") {
       if (game.state === "paused") resume();
+      else if (game.state === "gameover") restart();
       else start();
       return;
     }
     jump();
-  });
-  canvas.addEventListener("pointerup", (e) => {
-    if (!touchStart) return;
-    const dx = e.clientX - touchStart.x;
-    const dy = e.clientY - touchStart.y;
-    if (dy > 28 && Math.abs(dy) > Math.abs(dx)) setDuck(true);
-    setTimeout(() => setDuck(false), 350);
-    touchStart = null;
   });
 
   primaryBtn.addEventListener("click", () => {
@@ -803,7 +803,6 @@
   btnSound.addEventListener("click", () => {
     game.soundOn = !game.soundOn;
     writeSound(game.soundOn);
-    btnSound.textContent = `♪ Səs: ${game.soundOn ? "Açıq" : "Bağlı"}`;
     btnSound.setAttribute("aria-pressed", String(game.soundOn));
   });
   btnReset.addEventListener("click", () => {
@@ -822,8 +821,8 @@
   function init() {
     fitCanvas();
     reset();
-    btnSound.textContent = `♪ Səs: ${game.soundOn ? "Açıq" : "Bağlı"}`;
     btnSound.setAttribute("aria-pressed", String(game.soundOn));
+    setPauseUI(false);
     bestEl.textContent = pad(game.best);
     requestAnimationFrame(loop);
   }

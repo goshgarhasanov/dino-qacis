@@ -168,16 +168,40 @@ canvas#game {
   opacity: 0.45;
 }
 
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+.logo-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--accent) 25%, var(--bg-2)),
+    color-mix(in srgb, var(--accent-2) 25%, var(--bg-2)));
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  box-shadow:
+    0 10px 22px rgba(0,0,0,0.40),
+    0 0 0 1px color-mix(in srgb, var(--accent) 18%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.logo-icon svg { display: block; image-rendering: pixelated; }
 .title {
-  margin: 0 0 6px;
-  font-size: clamp(30px, 5vw, 46px);
+  margin: 0;
+  font-size: clamp(26px, 4.8vw, 40px);
   font-weight: 900;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.04em;
   background: linear-gradient(135deg, var(--accent), var(--accent-2));
   -webkit-background-clip: text;
           background-clip: text;
   color: transparent;
-  text-shadow: 0 0 36px color-mix(in srgb, var(--accent) 35%, transparent);
+  text-shadow: 0 0 30px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 .title span {
   background: linear-gradient(135deg, var(--accent-2), var(--accent-3));
@@ -282,24 +306,103 @@ kbd {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  font-size: 12.5px;
-  color: var(--muted);
-  letter-spacing: 0.05em;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.foot .dot { opacity: 0.5; }
-.link-btn {
+
+.game-btn {
   appearance: none;
-  background: transparent;
-  border: 0;
-  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background:
+    linear-gradient(180deg,
+      color-mix(in srgb, var(--bg-2) 92%, var(--accent) 8%) 0%,
+      color-mix(in srgb, var(--bg-2) 70%, #000 30%) 100%);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+  color: var(--fg);
+  font: 700 11.5px/1 "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 10px 14px;
+  border-radius: 11px;
   cursor: pointer;
-  font: inherit;
-  padding: 6px 8px;
-  border-radius: 8px;
-  transition: color 120ms ease, background 120ms ease;
+  transition: transform 100ms ease, box-shadow 180ms ease, border-color 180ms ease, color 120ms ease, opacity 180ms ease;
+  box-shadow:
+    0 8px 18px rgba(0,0,0,0.40),
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.35);
+  position: relative;
+  overflow: hidden;
 }
-.link-btn:hover { color: var(--fg); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.game-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 11px;
+  background: radial-gradient(120% 80% at 50% -20%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 200ms ease;
+  pointer-events: none;
+}
+.game-btn:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.45),
+    0 0 0 1px color-mix(in srgb, var(--accent) 30%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.35);
+}
+.game-btn:hover::before { opacity: 1; }
+.game-btn:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.40),
+    inset 0 2px 4px rgba(0,0,0,0.30);
+}
+.game-btn:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 3px;
+}
+.game-btn .ic {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--accent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+  transition: color 120ms ease, text-shadow 180ms ease;
+}
+.game-btn .lb { color: color-mix(in srgb, var(--fg) 80%, transparent); }
+
+.game-btn[aria-pressed="false"] { opacity: 0.55; }
+.game-btn[aria-pressed="false"] .ic {
+  color: var(--muted);
+  text-shadow: none;
+}
+
+#btn-sound[aria-pressed="false"] .ic::after {
+  content: "/";
+  position: relative;
+  margin-left: 2px;
+  opacity: 0.7;
+}
+
+.game-btn--danger { border-color: color-mix(in srgb, var(--accent-3) 22%, var(--line)); }
+.game-btn--danger .ic {
+  color: var(--accent-3);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent-3) 55%, transparent);
+}
+.game-btn--danger:hover {
+  border-color: color-mix(in srgb, var(--accent-3) 60%, var(--line));
+  box-shadow:
+    0 12px 24px rgba(0,0,0,0.45),
+    0 0 0 1px color-mix(in srgb, var(--accent-3) 35%, transparent),
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(0,0,0,0.35);
+}
+.game-btn--danger::before {
+  background: radial-gradient(120% 80% at 50% -20%, color-mix(in srgb, var(--accent-3) 22%, transparent), transparent 70%);
+}
 
 @media (hover: none) and (pointer: coarse) {
   .touch-bar { display: flex; }
