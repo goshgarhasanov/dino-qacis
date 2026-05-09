@@ -24,6 +24,33 @@ Heç bir quraşdırmaya, qeydiyyata və ya kukiyə ehtiyac yoxdur — səhifəni
 
 ---
 
+## Ekran görüntüləri
+
+<div align="center">
+
+### Oyun anı
+
+![DinoGame.Az — oyun zamanı](screenshots/desktop-play.png)
+
+### Başlıq və mobil görünüş
+
+<table>
+  <tr>
+    <td align="center" width="55%">
+      <strong>Başlıq ekranı (masaüstü)</strong><br/>
+      <img src="screenshots/desktop-hero.png" alt="DinoGame.Az başlıq ekranı" />
+    </td>
+    <td align="center" width="45%">
+      <strong>Mobil — başlıq</strong><br/>
+      <img src="screenshots/mobile-hero.png" alt="DinoGame.Az mobil başlıq" />
+    </td>
+  </tr>
+</table>
+
+</div>
+
+---
+
 ## Xüsusiyyətlər
 
 | | |
