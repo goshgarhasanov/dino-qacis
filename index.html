@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+<meta name="theme-color" content="#f7f7f7" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#0f1115" media="(prefers-color-scheme: dark)" />
+<meta name="description" content="Google Chrome dinozavr oyununun cilalanmış, mobil və masaüstü üçün uyğunlaşdırılmış versiyası. Yalnız HTML, CSS və JavaScript ilə hazırlanıb." />
+<title>Dino Qaçış — Sonsuz Piksel Oyunu</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23222'/%3E%3Crect x='6' y='3' width='6' height='5' fill='%23eaeaea'/%3E%3Crect x='10' y='4' width='1' height='1' fill='%23222'/%3E%3Crect x='4' y='8' width='6' height='4' fill='%23eaeaea'/%3E%3Crect x='5' y='12' width='2' height='2' fill='%23eaeaea'/%3E%3Crect x='8' y='12' width='2' height='2' fill='%23eaeaea'/%3E%3C/svg%3E" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="stage" id="stage">
+    <header class="hud" aria-hidden="false">
+      <div class="hud-left">
+        <span class="badge" id="badge-best">REKORD <span id="best">00000</span></span>
+      </div>
+      <div class="hud-right">
+        <span class="badge mono" id="score">00000</span>
+      </div>
+    </header>
+
+    <div class="canvas-wrap">
+      <canvas id="game" width="1200" height="360" aria-label="Dino Qaçış oyunu"></canvas>
+
+      <div class="overlay" id="overlay" data-state="ready">
+        <div class="overlay-card">
+          <h1 class="title">DİNO <span>QAÇIŞ</span></h1>
+          <p class="subtitle" id="subtitle">Başlamaq üçün ekrana toxun, kliklə və ya <kbd>Space</kbd> düyməsini bas</p>
+          <ul class="hints">
+            <li><kbd>Space</kbd> / <kbd>↑</kbd> / Toxunma — Tullanmaq</li>
+            <li><kbd>↓</kbd> / Aşağı sürüşdür — Əyilmək</li>
+            <li><kbd>P</kbd> — Fasilə</li>
+          </ul>
+          <button class="btn" id="primary-btn" type="button">Başla</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="touch-bar" aria-label="Toxunma idarəetməsi">
+      <button class="touch-btn" id="btn-jump" aria-label="Tullan">▲</button>
+      <button class="touch-btn" id="btn-duck" aria-label="Əyil">▼</button>
+    </nav>
+
+    <footer class="foot">
+      <button class="link-btn" id="btn-sound" type="button" aria-pressed="true">♪ Səs: Açıq</button>
+      <span class="dot">•</span>
+      <button class="link-btn" id="btn-pause" type="button">Fasilə</button>
+      <span class="dot">•</span>
+      <button class="link-btn" id="btn-reset" type="button">Rekordu sıfırla</button>
+    </footer>
+  </main>
+
+  <script src="game.js" defer></script>
+</body>
+</html>
